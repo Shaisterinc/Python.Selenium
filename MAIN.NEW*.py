@@ -77,62 +77,59 @@ def accept_cookies_if_present(driver):
         print("No cookie/privacy popup to accept.")
 # ---------------------------        
 
+# Step 1: Select and add items to bag
+
 # ---- PRODUCT SELECTION ----
+print("✅ Starting automation flow")
 def automate_selections(driver, timeout=15):
     wait = WebDriverWait(driver, timeout)
 
     def force_select(label):
         try:
-            # Always click the label no matter what, to force UI state
-            element = wait.until(EC.element_to_be_clickable((
-                By.XPATH,
-                f"//div[text()='{label}']"
-            )))
+            element = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[text()='{label}']")))
             element.click()
             print(f"Clicked: {label}")
-            
-            # Confirm it has the active class
-            wait.until(EC.presence_of_element_located((
-                By.XPATH,
-                f"//div[text()='{label}' and contains(@class, 'index_activeSizeTitle__QNbgr')]"
-            )))
+            wait.until(EC.presence_of_element_located((By.XPATH, f"//div[text()='{label}' and contains(@class, 'index_activeSizeTitle__QNbgr')]")))
             print(f"Confirmed selected: {label}")
             time.sleep(1.5)
-
         except Exception as e:
-            print(f"Selection failed for {label}: {e}")
+            print(f"❌ Selection failed for {label}: {e}")
 
     def add_to_bag():
         try:
-            btn = wait.until(EC.element_to_be_clickable((
-                By.XPATH,
-                "//div[text()='ADD TO BAG']"
-            )))
-            btn.click()
-            print("Clicked: ADD TO BAG")
-            time.sleep(3)
-        except Exception as e:
-            print(f"Add to bag failed: {e}")
+            print("🛒 Attempting to click 'ADD TO BAG'...")
+            print("🧪 About to screenshot before bag click")
+            driver.save_screenshot("before_add_to_bag.png")
 
-    # Step 1: Force select “Single box” and add
+            btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[text()='ADD TO BAG']")))
+            btn.click()
+            print("✅ Clicked: ADD TO BAG")
+
+            time.sleep(3)
+            driver.save_screenshot("after_add_to_bag.png")
+        except Exception as e:
+            print(f"❌ Add to bag failed: {e}")
+
     force_select("Single box")
     add_to_bag()
 
-    # Step 2: Force select “Whole set” and add
     force_select("Whole set")
     add_to_bag()
-# ---------------------------
 
-# ---- ADD TO BAG AND VIEW CART FUNCTIONS ----
+    print("🧭 Done with automate_selections.")
+    
+#---- ADD TO BAG AND VIEW CART FUNCTIONS ----
+print("🧪 About to click shopping bag icon")
 def click_shopping_bag_icon(driver):
     try:
         bag_icon = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//img[contains(@src, "bag.png")]'))
+           EC.element_to_be_clickable((By.XPATH, '//img[@alt="POP MART" and contains(@src, "bag.png")]'))
         )
         bag_icon.click()
         print("Clicked the shopping bag icon.")
     except Exception as e:
         print(f"Error clicking shopping bag icon: {e}")
+        print("✅ Finished clicking bag icon — proceeding...")
 
 def click_custom_checkbox(driver, timeout=10):
     try:
@@ -481,11 +478,11 @@ def check_product():
         print("✅ 'ADD TO BAG' button is available.")
         send_email_avail()
 
-
-
+        
         if  automate_selections(driver):
-            time.sleep(2)
-            click_shopping_bag_icon(driver)
+            print("🧪 Waiting to click shopping bag icon...")
+            driver.save_screenshot("before_click_bag.png")
+            # click_shopping_bag_icon(driver)
             time.sleep(2)
             click_custom_checkbox(driver)
             time.sleep(2)
