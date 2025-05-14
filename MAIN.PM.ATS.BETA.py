@@ -573,33 +573,35 @@ def check_product():
     driver = None
   
     try:
-        # Set up Chrome options 
-        CHROME_BROWSER_PATH = r"C:\Program Files\Google\Chrome\Application\chrome.exe"        
-        CHROME_DRIVER_PATH = r"C:\Users\admin\Selenium\chromedriver.exe"
-           
+        # Set up Chrome options                 
         options = uc.ChromeOptions()               
-        options.add_argument("--no-sandbox")        
+        options.add_argument("--no-sandbox") 
+        options.add_argument("--disable-gpu")       
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.add_argument("--disable-background-networking")
         options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--disable-extensions")
-        options.add_argument(f"--user-data-dir=/tmp/my-unique-profile")  
+        options.add_argument("--disable-extensions")        
+        options.add_argument(f"--user-data-dir=C:/Users/admin/AppData/Local/Temp/my-chrome-profile")
+
+        CHROME_BROWSER_PATH = "C:/Program Files/Google/Chrome/Application/chrome.exe"        
+        CHROME_DRIVER_PATH = "C:/Users/admin/Selenium/chromedriver.exe"  
 
         options.binary_location = CHROME_BROWSER_PATH       
                                             
-        driver = uc.Chrome(options=options,                            
+        driver = uc.Chrome(options=options,                                   
         # browser_executable_path=CHROME_BROWSER_PATH,
-        # use_subprocess=False,
+        version_main=136,
+        use_subprocess=False,
         driver_executable_path=CHROME_DRIVER_PATH)
 
         # Set the window size to half of the screen
-        screen_width = 2560
+        screen_width = 1920
         screen_height = 1080
 
         half_width = screen_width // 2
         half_height = screen_height // 2
 
-        driver.set_window_position(half_width, 0)  
+        driver.set_window_position(0, 0)  
         driver.set_window_size(half_width, half_height)     
         
         start_time = time.time()
